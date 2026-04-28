@@ -1,0 +1,61 @@
+{
+  "siteId": "site-hq-01",
+  "gatewayId": "gw-hq-01",
+  "description": "Sample 2-floor office — 50×30 m. Used as the simulation target throughout MVP testing.",
+  "floorplan": {
+    "width_m": 50,
+    "height_m": 30,
+    "floors": 2
+  },
+  "zones": [
+    {
+      "id": "zone-reception",
+      "label": "Reception",
+      "floor": 1,
+      "ref_dist_m": 3.0,
+      "description": "Entrance lobby — high footfall, short dwell"
+    },
+    {
+      "id": "zone-open-plan-a",
+      "label": "Open Plan A",
+      "floor": 1,
+      "ref_dist_m": 8.0,
+      "description": "South open-plan desk area"
+    },
+    {
+      "id": "zone-open-plan-b",
+      "label": "Open Plan B",
+      "floor": 1,
+      "ref_dist_m": 14.0,
+      "description": "North open-plan desk area"
+    },
+    {
+      "id": "zone-meeting-rooms",
+      "label": "Meeting Rooms",
+      "floor": 1,
+      "ref_dist_m": 5.0,
+      "description": "Cluster of 4 meeting rooms, east wing"
+    },
+    {
+      "id": "zone-break-room",
+      "label": "Break Room",
+      "floor": 1,
+      "ref_dist_m": 6.0,
+      "description": "Kitchen and break area, west wing"
+    },
+    {
+      "id": "zone-floor2-open",
+      "label": "Floor 2 Open Plan",
+      "floor": 2,
+      "ref_dist_m": 10.0,
+      "description": "Second floor open-plan area"
+    },
+    {
+      "id": "zone-floor2-boardroom",
+      "label": "Boardroom",
+      "floor": 2,
+      "ref_dist_m": 4.0,
+      "description": "Executive boardroom, floor 2"
+    }
+  ]
+}

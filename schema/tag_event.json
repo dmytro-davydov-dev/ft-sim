@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowterra.io/schemas/tag_event.json",
+  "title": "TagEvent",
+  "description": "Canonical MQTT payload published by BLE gateways (and sim-publisher). This is the ingest-fn contract — both sim and real hardware MUST conform.",
+  "type": "object",
+  "required": ["customerId", "gatewayId", "tagId", "rssi", "zoneId", "ts", "floor", "batteryPct"],
+  "additionalProperties": false,
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Tenant identifier — injected by gateway firmware or sim"
+    },
+    "gatewayId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "BLE gateway / anchor identifier"
+    },
+    "tagId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "BLE beacon MAC address or UUID"
+    },
+    "rssi": {
+      "type": "integer",
+      "minimum": -120,
+      "maximum": 0,
+      "description": "Received signal strength in dBm (always negative)"
+    },
+    "zoneId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Pre-mapped zone identifier (sim assigns from site config; ingest-fn may re-derive)"
+    },
+    "ts": {
+      "type": "integer",
+      "minimum": 1000000000000,
+      "description": "Event timestamp — milliseconds since Unix epoch UTC"
+    },
+    "floor": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Floor level (0 = ground floor)"
+    },
+    "batteryPct": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Battery charge level 0–100 %"
+    }
+  }
+}

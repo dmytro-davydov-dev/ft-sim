@@ -1,0 +1,7 @@
+# sim_publisher runtime + test dependencies
+
+# MQTT client — paho-mqtt 2.0 introduced the VERSION2 callback API used here
+paho-mqtt>=2.0,<3
+
+# JSON Schema validation (--validate flag + test suite)
+jsonschema>=4.0,<5
