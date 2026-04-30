@@ -58,13 +58,14 @@ N_BADGE     = 20
 N_ASSET     = 15
 N_WRISTBAND = 15
 
-# Zones (subset of sample_site.json — exactly 5)
+# Zones — floor-1 zones from config/sample_site.json (FLO-24).
+# Keep in sync with the "zones" array in that file.
 ZONES = [
-    {"id": "zone-reception",    "label": "Reception",       "floor": 1, "ref_dist_m": 3.0},
-    {"id": "zone-open-plan-a",  "label": "Open Plan A",     "floor": 1, "ref_dist_m": 8.0},
-    {"id": "zone-open-plan-b",  "label": "Open Plan B",     "floor": 1, "ref_dist_m": 14.0},
-    {"id": "zone-meeting-rooms","label": "Meeting Rooms",   "floor": 1, "ref_dist_m": 5.0},
-    {"id": "zone-break-room",   "label": "Break Room",      "floor": 1, "ref_dist_m": 6.0},
+    {"id": "zone-reception",  "label": "Reception",      "floor": 1, "ref_dist_m": 3.0},
+    {"id": "zone-open-plan",  "label": "Open Plan",      "floor": 1, "ref_dist_m": 10.0},
+    {"id": "zone-meeting-a",  "label": "Meeting Room A", "floor": 1, "ref_dist_m": 4.0},
+    {"id": "zone-meeting-b",  "label": "Meeting Room B", "floor": 1, "ref_dist_m": 4.0},
+    {"id": "zone-kitchen",    "label": "Kitchen",        "floor": 1, "ref_dist_m": 5.0},
 ]
 
 # ---------------------------------------------------------------------------

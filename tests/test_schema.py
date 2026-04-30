@@ -37,8 +37,9 @@ from sim_publisher import (  # noqa: E402
     rssi_dbm,
 )
 
-SCHEMA_PATH = ROOT / "schema" / "tag_event.json"
-SITE_CONFIG_PATH = ROOT / "config" / "sample_site.json"
+SCHEMA_PATH           = ROOT / "schema" / "tag_event.json"
+SITE_CONFIG_PATH      = ROOT / "config" / "sample_site.json"
+SYNTHETIC_EVENTS_PATH = ROOT / "data"   / "synthetic_events.jsonl"
 
 
 # ---------------------------------------------------------------------------
@@ -271,3 +272,143 @@ def test_battery_drains_over_time(cfg):
     final = [t.battery_pct for t in tags]
     assert all(f <= i for f, i in zip(final, initial)), \
         "Battery should only decrease over time"
+
+
+# ---------------------------------------------------------------------------
+# synthetic_events.jsonl — regression guard (FLO-25)
+#
+# generate_synthetic.py produces ≥10,000 deterministic events that represent
+# a 3-hour simulated workday.  These tests validate the file against the
+# canonical JSON Schema and act as a drift gate before Phase 4 integration.
+# ---------------------------------------------------------------------------
+
+def _iter_synthetic_events() -> list[dict]:
+    """Load all non-empty lines from synthetic_events.jsonl."""
+    assert SYNTHETIC_EVENTS_PATH.exists(), (
+        f"synthetic_events.jsonl missing: {SYNTHETIC_EVENTS_PATH}\n"
+        "Run: python generate_synthetic.py"
+    )
+    events = []
+    with SYNTHETIC_EVENTS_PATH.open() as fh:
+        for lineno, raw in enumerate(fh, 1):
+            raw = raw.strip()
+            if not raw:
+                continue
+            try:
+                events.append((lineno, json.loads(raw)))
+            except json.JSONDecodeError as exc:
+                pytest.fail(f"Line {lineno}: invalid JSON — {exc}")
+    return events
+
+
+def test_synthetic_events_file_exists():
+    """data/synthetic_events.jsonl must be present in the repo."""
+    assert SYNTHETIC_EVENTS_PATH.exists(), (
+        f"Missing {SYNTHETIC_EVENTS_PATH} — run: python generate_synthetic.py"
+    )
+
+
+def test_synthetic_events_min_count():
+    """JSONL must contain at least 10,000 events (generate_synthetic.py guarantee)."""
+    events = _iter_synthetic_events()
+    assert len(events) >= 10_000, (
+        f"Expected ≥10,000 events, found {len(events)}. "
+        "Re-run: python generate_synthetic.py"
+    )
+
+
+def test_synthetic_events_all_valid(schema):
+    """
+    Every event in synthetic_events.jsonl must conform to tag_event.json schema.
+
+    This is the Phase 3 exit-criteria regression gate: it catches schema drift
+    between generate_synthetic.py and the ingest-fn contract before Phase 4.
+    Fail-fast after the first 10 violations to keep CI output readable.
+    """
+    validator = jsonschema.Draft202012Validator(schema)
+    events = _iter_synthetic_events()
+    failures: list[str] = []
+
+    for lineno, event in events:
+        for err in validator.iter_errors(event):
+            failures.append(f"line {lineno}: {err.message}")
+        if len(failures) >= 10:
+            break
+
+    assert not failures, (
+        f"{len(failures)} schema violation(s) in {SYNTHETIC_EVENTS_PATH.name} "
+        f"(showing first {len(failures)}):\n" + "\n".join(failures)
+    )
+
+
+def test_synthetic_events_required_fields_all_present(schema):
+    """
+    Spot-check: every required field must exist on every event.
+    Complements the full schema validation above.
+    """
+    required = schema["required"]
+    events = _iter_synthetic_events()
+    missing: list[str] = []
+
+    for lineno, event in events[:500]:    # sample first 500 for speed
+        for field in required:
+            if field not in event:
+                missing.append(f"line {lineno}: missing '{field}'")
+
+    assert not missing, "\n".join(missing[:10])
+
+
+def test_synthetic_events_zone_ids_match_site_config(site):
+    """
+    Regression guard: every zoneId in the JSONL must appear in sample_site.json.
+
+    Catches drift when generate_synthetic.py zone IDs diverge from the site
+    config that ft-sim and ingest-fn actually use.
+    """
+    valid_zone_ids = {z.id for z in site.zones}
+    events = _iter_synthetic_events()
+    unknown: set[str] = set()
+
+    for _lineno, event in events:
+        zid = event.get("zoneId", "")
+        if zid not in valid_zone_ids:
+            unknown.add(zid)
+
+    assert not unknown, (
+        f"JSONL contains zone IDs not in sample_site.json: {sorted(unknown)}\n"
+        "Re-run: python generate_synthetic.py  (after updating ZONES constant)"
+    )
+
+
+def test_synthetic_events_rssi_all_in_range(schema):
+    """
+    Spot-check RSSI bounds across all events — a fast range guard distinct
+    from full schema validation.
+    """
+    events = _iter_synthetic_events()
+    out_of_range = [
+        (ln, ev["rssi"])
+        for ln, ev in events
+        if not (-120 <= ev.get("rssi", 0) <= 0)
+    ]
+    assert not out_of_range, (
+        f"{len(out_of_range)} event(s) with RSSI outside [-120, 0]:\n"
+        + "\n".join(f"  line {ln}: rssi={v}" for ln, v in out_of_range[:5])
+    )
+
+
+def test_synthetic_events_ts_monotonically_non_decreasing():
+    """
+    Events are sorted by ts in the JSONL (generate_synthetic.py guarantees this).
+    Catches accidental re-generation without sorting.
+    """
+    events = _iter_synthetic_events()
+    prev_ts: int | None = None
+    for lineno, event in events:
+        ts = event.get("ts", 0)
+        if prev_ts is not None and ts < prev_ts:
+            pytest.fail(
+                f"Timestamp decreased at line {lineno}: "
+                f"{ts} < {prev_ts} (events must be sorted ascending by ts)"
+            )
+        prev_ts = ts
