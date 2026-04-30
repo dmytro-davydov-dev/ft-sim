@@ -1,11 +1,13 @@
 {
-  "siteId": "site-hq-01",
-  "gatewayId": "gw-hq-01",
-  "description": "Sample 2-floor office — 50×30 m. Used as the simulation target throughout MVP testing.",
+  "_comment": "Pilot office site — 2,000 m² per floor (50×40 m), 2 floors. Zones, bounds and anchor positions are design-intent values; confirm actual pilot dimensions with stakeholder before Phase 7. Used as simulation target throughout MVP testing (Phase 3–6).",
+  "siteId": "site-hq-pilot",
+  "gatewayId": "gw-f1-01",
+  "description": "2-floor office (50×40 m per floor = 2,000 m²/floor). 7 zones. 30 Minew-G1-class BLE anchors — 20 on floor 1 (~1 per 100 m²) and 10 on floor 2.",
   "floorplan": {
     "width_m": 50,
-    "height_m": 30,
-    "floors": 2
+    "height_m": 40,
+    "floors": 2,
+    "floor_area_m2": 2000
   },
   "zones": [
     {
@@ -13,49 +15,88 @@
       "label": "Reception",
       "floor": 1,
       "ref_dist_m": 3.0,
+      "bounds": { "x1": 0, "y1": 0, "x2": 10, "y2": 40 },
       "description": "Entrance lobby — high footfall, short dwell"
     },
     {
-      "id": "zone-open-plan-a",
-      "label": "Open Plan A",
+      "id": "zone-open-plan",
+      "label": "Open Plan",
       "floor": 1,
-      "ref_dist_m": 8.0,
-      "description": "South open-plan desk area"
+      "ref_dist_m": 10.0,
+      "bounds": { "x1": 10, "y1": 0, "x2": 35, "y2": 25 },
+      "description": "Main open-plan desk area — south half of building"
     },
     {
-      "id": "zone-open-plan-b",
-      "label": "Open Plan B",
+      "id": "zone-meeting-a",
+      "label": "Meeting Room A",
       "floor": 1,
-      "ref_dist_m": 14.0,
-      "description": "North open-plan desk area"
+      "ref_dist_m": 4.0,
+      "bounds": { "x1": 10, "y1": 25, "x2": 22, "y2": 40 },
+      "description": "Meeting room cluster A — north-west quadrant"
     },
     {
-      "id": "zone-meeting-rooms",
-      "label": "Meeting Rooms",
+      "id": "zone-meeting-b",
+      "label": "Meeting Room B",
+      "floor": 1,
+      "ref_dist_m": 4.0,
+      "bounds": { "x1": 22, "y1": 25, "x2": 35, "y2": 40 },
+      "description": "Meeting room cluster B — north-centre quadrant"
+    },
+    {
+      "id": "zone-kitchen",
+      "label": "Kitchen & Break Area",
       "floor": 1,
       "ref_dist_m": 5.0,
-      "description": "Cluster of 4 meeting rooms, east wing"
-    },
-    {
-      "id": "zone-break-room",
-      "label": "Break Room",
-      "floor": 1,
-      "ref_dist_m": 6.0,
-      "description": "Kitchen and break area, west wing"
+      "bounds": { "x1": 35, "y1": 0, "x2": 50, "y2": 40 },
+      "description": "Kitchen and break area — east wing, full height"
     },
     {
       "id": "zone-floor2-open",
       "label": "Floor 2 Open Plan",
       "floor": 2,
       "ref_dist_m": 10.0,
-      "description": "Second floor open-plan area"
+      "bounds": { "x1": 0, "y1": 0, "x2": 35, "y2": 40 },
+      "description": "Second floor open-plan — west and centre"
     },
     {
       "id": "zone-floor2-boardroom",
       "label": "Boardroom",
       "floor": 2,
       "ref_dist_m": 4.0,
-      "description": "Executive boardroom, floor 2"
+      "bounds": { "x1": 35, "y1": 0, "x2": 50, "y2": 40 },
+      "description": "Executive boardroom — floor 2, east wing"
     }
+  ],
+  "anchors": [
+    { "gatewayId": "gw-f1-01", "floor": 1, "x_m":  5, "y_m":  5, "zone_hint": "zone-reception" },
+    { "gatewayId": "gw-f1-02", "floor": 1, "x_m":  5, "y_m": 15, "zone_hint": "zone-reception" },
+    { "gatewayId": "gw-f1-03", "floor": 1, "x_m":  5, "y_m": 25, "zone_hint": "zone-reception" },
+    { "gatewayId": "gw-f1-04", "floor": 1, "x_m":  5, "y_m": 35, "zone_hint": "zone-reception" },
+    { "gatewayId": "gw-f1-05", "floor": 1, "x_m": 15, "y_m":  5, "zone_hint": "zone-open-plan" },
+    { "gatewayId": "gw-f1-06", "floor": 1, "x_m": 15, "y_m": 15, "zone_hint": "zone-open-plan" },
+    { "gatewayId": "gw-f1-07", "floor": 1, "x_m": 15, "y_m": 27, "zone_hint": "zone-meeting-a" },
+    { "gatewayId": "gw-f1-08", "floor": 1, "x_m": 15, "y_m": 37, "zone_hint": "zone-meeting-a" },
+    { "gatewayId": "gw-f1-09", "floor": 1, "x_m": 25, "y_m":  5, "zone_hint": "zone-open-plan" },
+    { "gatewayId": "gw-f1-10", "floor": 1, "x_m": 25, "y_m": 15, "zone_hint": "zone-open-plan" },
+    { "gatewayId": "gw-f1-11", "floor": 1, "x_m": 25, "y_m": 27, "zone_hint": "zone-meeting-b" },
+    { "gatewayId": "gw-f1-12", "floor": 1, "x_m": 25, "y_m": 37, "zone_hint": "zone-meeting-b" },
+    { "gatewayId": "gw-f1-13", "floor": 1, "x_m": 38, "y_m":  5, "zone_hint": "zone-kitchen" },
+    { "gatewayId": "gw-f1-14", "floor": 1, "x_m": 38, "y_m": 15, "zone_hint": "zone-kitchen" },
+    { "gatewayId": "gw-f1-15", "floor": 1, "x_m": 38, "y_m": 25, "zone_hint": "zone-kitchen" },
+    { "gatewayId": "gw-f1-16", "floor": 1, "x_m": 38, "y_m": 35, "zone_hint": "zone-kitchen" },
+    { "gatewayId": "gw-f1-17", "floor": 1, "x_m": 47, "y_m":  5, "zone_hint": "zone-kitchen" },
+    { "gatewayId": "gw-f1-18", "floor": 1, "x_m": 47, "y_m": 15, "zone_hint": "zone-kitchen" },
+    { "gatewayId": "gw-f1-19", "floor": 1, "x_m": 47, "y_m": 25, "zone_hint": "zone-kitchen" },
+    { "gatewayId": "gw-f1-20", "floor": 1, "x_m": 47, "y_m": 35, "zone_hint": "zone-kitchen" },
+    { "gatewayId": "gw-f2-01", "floor": 2, "x_m":  5, "y_m": 10, "zone_hint": "zone-floor2-open" },
+    { "gatewayId": "gw-f2-02", "floor": 2, "x_m":  5, "y_m": 30, "zone_hint": "zone-floor2-open" },
+    { "gatewayId": "gw-f2-03", "floor": 2, "x_m": 15, "y_m": 10, "zone_hint": "zone-floor2-open" },
+    { "gatewayId": "gw-f2-04", "floor": 2, "x_m": 15, "y_m": 30, "zone_hint": "zone-floor2-open" },
+    { "gatewayId": "gw-f2-05", "floor": 2, "x_m": 25, "y_m": 10, "zone_hint": "zone-floor2-open" },
+    { "gatewayId": "gw-f2-06", "floor": 2, "x_m": 25, "y_m": 30, "zone_hint": "zone-floor2-open" },
+    { "gatewayId": "gw-f2-07", "floor": 2, "x_m": 38, "y_m": 10, "zone_hint": "zone-floor2-boardroom" },
+    { "gatewayId": "gw-f2-08", "floor": 2, "x_m": 38, "y_m": 30, "zone_hint": "zone-floor2-boardroom" },
+    { "gatewayId": "gw-f2-09", "floor": 2, "x_m": 47, "y_m": 10, "zone_hint": "zone-floor2-boardroom" },
+    { "gatewayId": "gw-f2-10", "floor": 2, "x_m": 47, "y_m": 30, "zone_hint": "zone-floor2-boardroom" }
   ]
 }
