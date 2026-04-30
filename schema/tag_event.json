@@ -4,7 +4,7 @@
   "title": "TagEvent",
   "description": "Canonical MQTT payload published by BLE gateways (and sim-publisher). This is the ingest-fn contract — both sim and real hardware MUST conform.",
   "type": "object",
-  "required": ["customerId", "gatewayId", "tagId", "rssi", "zoneId", "ts", "floor", "batteryPct"],
+  "required": ["customerId", "gatewayId", "tagId", "rssi", "zoneId", "ts"],
   "additionalProperties": false,
   "properties": {
     "customerId": {
