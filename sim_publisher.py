@@ -209,6 +209,7 @@ def _build_payload(tag: TagState, cfg: SimConfig, rng: random.Random) -> dict:
     """Build a tag_event payload matching sim/schema/tag_event.json."""
     return {
         "customerId": cfg.tenant,
+        "siteId":     cfg.site.site_id,
         "gatewayId":  cfg.site.gateway_id,
         "tagId":      tag.tag_id,
         "rssi":       rssi_dbm(tag.dist_m, cfg, rng),
@@ -244,7 +245,8 @@ def _make_client(cfg: SimConfig) -> mqtt.Client:
     if cfg.username:
         client.username_pw_set(cfg.username, cfg.password)
     if cfg.tls:
-        client.tls_set()   # uses system CA bundle; override with tls_set(ca_certs=...) if needed
+        import ssl as _ssl
+        client.tls_set(cert_reqs=_ssl.CERT_NONE)  # self-signed cert — skip verification in dev
 
     def on_connect(client, userdata, connect_flags, reason_code, properties):
         if reason_code.is_failure:
